@@ -152,6 +152,11 @@ define(['jquery', 'knockout', 'jnj_chart', 'd3', 'ohdsi.util', 'appConfig', 'fac
 							self.currentCohortComparisonId(cohortComparisonId)
 							self.currentView('estimation');
 						});
+					},
+					'/iranalysis': function () {
+						require(['ir-analysis-manager'], function () {
+							self.currentView('iranalysis');
+						});
 					}
 				}
 				self.router = new Router(routes).configure(routerOptions);
