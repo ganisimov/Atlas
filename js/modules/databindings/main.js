@@ -10,4 +10,6 @@ define(function (require) {
 	var eventListener = require("./eventListenerBinding");
 	var selectOnFocus = require("./knockout.selectOnFocus");
 	var sortExtender = require("./sortExtender");
+	var bootstrapModal = require("./bootstrapModal");
+	
 });

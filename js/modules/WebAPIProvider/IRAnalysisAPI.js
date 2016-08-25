@@ -1,6 +1,7 @@
 define(function (require, exports) {
 
 	var $ = require('jquery');
+	var ko = require('knockout');
 	var config = require('appConfig');
 	
 	function pruneJSON(key, value) {
@@ -19,21 +20,30 @@ define(function (require, exports) {
 	}
 	
 	function getAnalysis(id) {
-		var loadPromise = $.ajax({
+		var loadPromise = $.Deferred();
+		$.ajax({
 			url: config.webAPIRoot + 'ir/' + id,
 			error: function (error) {
 				console.log("Error: " + error);
 			}
+		}).then(function (result) {
+			result.expression = JSON.parse(result.expression);
+			loadPromise.resolve(result);
 		});
 		return loadPromise;	
 	}
 		
 	function saveAnalysis(definition) {
+		var definitionCopy = JSON.parse(ko.toJSON(definition))
+		
+		if (typeof definitionCopy.expression != 'string')
+			definitionCopy.expression = JSON.stringify(definitionCopy.expression);
+		
 		var savePromise = $.ajax({
-			url: config.webAPIRoot + 'ir/' + (definition.id || ""),
+			url: config.webAPIRoot + 'ir/' + (definitionCopy.id || ""),
 			method: 'PUT',
 			contentType: 'application/json',
-			data: JSON.stringify(definition),
+			data: JSON.stringify(definitionCopy),
 			error: function (error) {
 				console.log("Error: " + error);
 			}
@@ -42,15 +52,19 @@ define(function (require, exports) {
 	}
 	
 	function copyAnalysis(id) {
-		var copyPromise = $.ajax({
+		var copyPromise = $.Deferred();
+		$.ajax({
 			url: config.webAPIRoot + 'ir/' + (id || "") +"/copy",
 			method: 'GET',
 			contentType: 'application/json',
 			error: function (error) {
 				console.log("Error: " + error);
 			}
+		}).then(function (result) {
+			result.expression = JSON.parse(result.expression);
+			copyPromise.resolve(result);
 		});
-		return copyPromise;
+		return copyPromise;	
 	}	
 	
 	function deleteAnalysis(id) {

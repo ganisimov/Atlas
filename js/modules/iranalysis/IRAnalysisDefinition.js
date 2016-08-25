@@ -3,7 +3,7 @@ define(function (require, exports) {
 	var ko = require('knockout');
 	var IRAnalysisExpression = require('./IRAnalysisExpression');
 
-	function CohortDefinition(data) {
+	function IRAnalysisDefinition(data) {
 		
 		var self = this;
 		var data = data || {};
@@ -13,5 +13,5 @@ define(function (require, exports) {
 		self.description = ko.observable(data.description || null);
 		self.expression = ko.observable(new IRAnalysisExpression(data.expression))
 	}
-	return CohortDefinition;
+	return IRAnalysisDefinition;
 });

@@ -1,11 +1,4 @@
-<div>
-	This is the browser component;
+<div class="heading">
+	Incidence Rate Analysis Projects
 </div>
-<!-- ko if: analysisList().length == 0 -->
-Nothing to show
-<!-- /ko -->
-
-<!-- ko if: analysisList().length > 0 -->
-Something to show.
-<!-- /ko -->
-
+<faceted-datatable params="orderColumn: 3, reference:analysisList, columns: columns, options:options"></faceted-datatable>

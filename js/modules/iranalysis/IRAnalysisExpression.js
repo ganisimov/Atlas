@@ -1,7 +1,7 @@
 define(function (require, exports) {
 
 	var ko = require('knockout');
-	var CriteriaGroup = require('cohortbuilder/CriteriaGroup');
+	var StudyWindow = require('./inputTypes/StudyWindow');
 	var ConceptSet = require('conceptsetbuilder/InputTypes/ConceptSet');
 	var StratifyRule = require('./StratifyRule');
 	
@@ -13,7 +13,7 @@ define(function (require, exports) {
 		self.ConceptSets = ko.observableArray(data.ConceptSets && data.ConceptSets.map(function(d) { return new ConceptSet(d) }));
 		self.targetIds = ko.observableArray(data.targetIds);
 		self.outcomeIds = ko.observableArray(data.outcomeIds);
-		self.studyWindow =  new StudyWindow(data.studyWindow);
+		self.studyWindow =  ko.observable(data.studyWindow && new StudyWindow(data.studyWindow));
 		self.strata = ko.observableArray(data.strata && data.strata.map(function (rule) {
 			return new StratifyRule(rule, self.ConceptSets);	
 		}));

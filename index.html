@@ -204,8 +204,8 @@
 				</div>
 			</div>
 
-			<div data-bind="if:pageModel.currentView() == 'iranalysis'">
-				<ir-analysis-manager params="{model: pageModel}"></ir-analysis-manager>
+			<div data-bind="visible:pageModel.currentView() == 'iranalysis'">
+				<ir-analysis-manager params="model: pageModel"></ir-analysis-manager>
 			</div>
 
 			<div data-bind="if: currentView() == 'template'">

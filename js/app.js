@@ -1,4 +1,4 @@
-define(['jquery', 'knockout', 'jnj_chart', 'd3', 'ohdsi.util', 'appConfig', 'facets', 'knockout-persist', 'css!styles/tabs.css', 'css!styles/buttons.css', ], function ($, ko, jnj_chart, d3, ohdsiUtil, config) {
+define(['jquery', 'knockout', 'jnj_chart', 'd3', 'ohdsi.util', 'appConfig', 'facets', 'knockout-persist', 'css!styles/tabs.css', 'css!styles/buttons.css', 'ir-analysis-manager' ], function ($, ko, jnj_chart, d3, ohdsiUtil, config) {
 	var appModel = function () {
 		$.support.cors = true;
 		var self = this;
@@ -1251,6 +1251,7 @@ define(['jquery', 'knockout', 'jnj_chart', 'd3', 'ohdsi.util', 'appConfig', 'fac
 				}
 			});
 		}
+		
 		self.loadCohortConceptSet = function (conceptSetId, viewToShow, mode) {
 			// Load up the selected concept set from the cohort definition
 			var conceptSet = self.currentCohortDefinition().expression().ConceptSets().filter(function (item) {

@@ -18,11 +18,18 @@ define([
 		ConceptSetItem,
 		VocabularyAPI) {
 
+	function conceptSetSorter(a,b)
+	{
+		var textA = a.name().toUpperCase();
+		var textB = b.name().toUpperCase();
+		return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+	}
+	
 	function CodesetBuilderViewModel(params) {
 			var self = this;
 			params.ref(this); // assign refrence to self to ref's param
 
-			self.conceptSets = params.conceptSets;
+			self.conceptSets = params.conceptSets.extend({sorted: conceptSetSorter});;
 			self.selectedConceptSet = ko.observable();
 			self.tabWidget = ko.observable();		
 			self.nameHasFocus = ko.observable();
@@ -40,7 +47,7 @@ define([
 				newConceptSet.id = self.conceptSets().length > 0 ? Math.max.apply(null, self.conceptSets().map(function (d) {
 					return d.id;
 				})) + 1 : 0;
-				self.conceptSets.push(newConceptSet);
+				params.$raw.conceptSets().push(newConceptSet);
 				self.selectedConceptSet(newConceptSet);
 				self.nameHasFocus(true);
 				return newConceptSet;
@@ -68,7 +75,7 @@ define([
 			};
 
 			self.deleteConceptSet = function () {
-				self.conceptSets.remove(self.selectedConceptSet());
+				 params.$raw.conceptSets().remove(self.selectedConceptSet());
 			}
 
 			// concept picker handlers
@@ -101,7 +108,7 @@ define([
 			}
 			
 			self.renderCheckbox = function (field) {
-				return '<span data-bind="click: function(d) { d.' + field + '(!d.' + field + '()); } ,css: { selected: ' + field + '} " class="fa fa-check-circle"></span>';
+				return '<span data-bind="click: function(d) { d.' + field + '(!d.' + field + '()); } ,css: { selected: ' + field + '} " class="fa fa-check"></span>';
 			}
 			
 			self.getConceptSetJson = function() {
