@@ -1784,7 +1784,7 @@
 			return this.svgDivEl;
 	}
 	*/
-	function nodata(chart) {
+	function nodata(chart, w, h) {
 		chart.html('');
 		chart.append("text")
 			.attr("transform", "translate(" + (w / 2) + "," + (h / 2) + ")")
@@ -2370,22 +2370,17 @@
 			}
 			var layout = cp._layout = new SvgLayout(w, h, cp.layout);
 			if (cp.y.showLabel) {
-				cp.y.labelComponent = new ChartLabelLeft(svgEl, layout, cp.y);
+				cp.y.labelEl = new ChartLabelLeft(svgEl, layout, cp.y);
 			}
-
-
 			if (cp.y.showAxis) {
-				cp.y.axisComponent = new ChartAxisY(svgEl, layout, cp.y);
+				cp.y.axisEl = new ChartAxisY(svgEl, layout, cp.y);
 			}
-
 			if (cp.x.showLabel) {
-				cp.x.labelComponent = new ChartLabelBottom(svgEl, layout, cp.x);
+				cp.x.labelEl = new ChartLabelBottom(svgEl, layout, cp.x);
 			}
 			if (cp.x.showAxis) {
-				cp.x.axisComponent = new ChartAxisX(svgEl, layout, cp.x);
+				cp.x.axisEl = new ChartAxisX(svgEl, layout, cp.x);
 			}
-			//layout.positionZones();
-			//layout.positionZones();
 
 			cp.updateAccessors(data, series);
 			cp.updateDomains(data, series);
@@ -2393,21 +2388,7 @@
 			cp.updateRanges(layout);
 			cp.chart.chart = new ChartChart(svgEl, layout, cp.chart, series);
 
-			// rectangle just to help with development:
-			/*
-			cp.chart.chart.gEl.addChild('chartrect', 
-												{
-														tag: 'rect',
-														classes:['foo','bar'],
-														updateCb: function(selection) {
-															selection
-																.attr('width', layout.svgWidth())
-																.attr('height', layout.svgHeight())
-																.style('fill', '#AAA')
-														},
-													});
-													*/
-
+			
 			var chart = cp.chart.chart.gEl.as('d3');
 
 			var legendWidth = 0;
@@ -2467,8 +2448,6 @@
 
 					layout.positionZones();
 					layout.positionZones();
-					//axisHelper.select(".x.axis").transition().duration(750).call(xAxis);
-					//axisHelper.select(".y.axis").transition().duration(750).call(yAxis);
 					$('.extent').hide();
 					$('.resize').hide();
 				});
@@ -2517,6 +2496,7 @@
 													return "translate(" + xVal + "," + yVal + ")";
 												})
 										},
+										/* testing transitions on exit
 										exitCb: function(selection, params, transitionOpts={}) {
 											var {delay=0, duration=0, transition} = transitionOpts;
 											selection
@@ -2544,38 +2524,18 @@
 												})
 												.remove()
 										},
+										*/
 									});
 
-			series = dataToSeries(data.slice(0,15000), cp.series);
+			series = dataToSeries(data.slice(0,5000), cp.series);
 			cp.chart.chart.gEl
 					.child('series')
-						.run({data: series, delay: 0, duration: 4000});
+						.run({data: series, delay: 500, duration: 200});
 			layout.positionZones();
 			layout.positionZones();
-			/*
-			cp.chart.chart.gEl
-					.child('series')
-					.child('dots')
-					.run({data: dataFromSeries(series), delay:5000,duration:2500});
-			*/
+
 			return;
-			/*
-			d3.select(cp.chart.chart.gEl.as('dom'))
-				.select('.series')
-				.selectAll('.dot')
-						.style('opacity', 1)
-						.attr('transform', 'scale(2,2)')
-					.transition().duration(1750).delay(500)
-						.attr("transform", "translate(100,100)scale(5,2)")
-					.transition()//.delay(1000).duration(1000)
-						.style('opacity', .2)
-						.attr("transform", "translate(-100,-100)scale(2,5)")
-					.transition()//.delay(2000).duration(1000)
-						.style('opacity', .8)
-						.attr("transform", "translate(0,0)scale(3,2)")
-					//.remove();
-			return;
-			*/
+
 			setTimeout(function() {
 				//divEl.update({duration:750});
 				series = dataToSeries(data.slice(0,100), cp.series);
