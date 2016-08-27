@@ -22,38 +22,43 @@
 				<button class="btn btn-sm btn-danger" data-bind="click: $component.delete">Delete</button>
 				<!-- /ko -->
 				<!-- /ko -->
+				<!-- ko if: selectedAnalysis().id() != null && !dirtyFlag().isDirty() && !isRunning() -->
+				<div class="generateAction" data-bind="ddSlickAction: generateActionsSettings "></div>
+				<!-- /ko -->
+
 			</div>
 		</div>
 	
 		<ul class="nav nav-tabs">
-			<li role="presentation" data-bind="css: { active: $component.tabMode() == 'definition' }, click: function() { $component.tabMode('definition') };">
+			<li role="presentation" data-bind="css: { active: $component.activeTab() == 'definition' }, click: function() { $component.activeTab('definition') };">
 				<a>Definition</a>
 			</li>
 
-			<li role="presentation" data-bind="css: { active: $component.tabMode() == 'conceptsets' }, click: function() { $component.tabMode('conceptsets') };">
+			<li role="presentation" data-bind="css: { active: $component.activeTab() == 'conceptsets' }, click: function() { $component.activeTab('conceptsets') };">
 				<a>Concept Sets</a>
 			</li>
 
-			<li role="presentation" data-bind="css: { active: $component.tabMode() == 'generation' }, click: function() { $component.tabMode('generation') };">
+			<li role="presentation" data-bind="css: { active: $component.activeTab() == 'generation' }, click: function() { $component.activeTab('execution') };">
 				<a>Generation</a>
 			</li>
 		</ul>
 		<div class="tab-content">
-			<div role="tabpanel" data-bind="css: { active: $component.tabMode() == 'definition' }" class="tab-pane">
+			<div role="tabpanel" data-bind="css: { active: $component.activeTab() == 'definition' }" class="tab-pane">
 				<div data-bind="eventListener: { event: 'click', selector: '.conceptset_selector', callback: handleConceptSetSelect}">
-					<ir-analysis-editor params="analysis: selectedAnalysis().expression"></ir-analysis-editor>
+					<ir-analysis-editor params="analysis: selectedAnalysis().expression, analysisCohorts: analysisCohorts"></ir-analysis-editor>
 				</div>
 			</div>
-			<div role="tabpanel" data-bind="css: { active: $component.tabMode() == 'conceptsets' }" class="tab-pane">
+			<div role="tabpanel" data-bind="css: { active: $component.activeTab() == 'conceptsets' }" class="tab-pane">
 				<div style="padding-bottom: 10px;" class="pull-right">
 					<button type="button" class="btn btn-sm btn-success pull-right" data-bind="click:function() { exportConceptSetsCSV(); }, css: {'disabled': dirtyFlag().isDirty, 'btn-success': !dirtyFlag().isDirty()}"><i class="fa fa-download" aria-hidden="true"></i> Export All Concept Sets To CSV</button>
 				</div>
 				<!-- ko with: selectedAnalysis().expression -->										
-					<concept-set-builder params="{conceptSets: ConceptSets, ref: $parent.conceptSetEditor}"></concept-set-builder>
+					<concept-set-builder params="conceptSets: ConceptSets, ref: $parent.conceptSetEditor"></concept-set-builder>
 				<!-- /ko -->			
 			</div>
-			<div role="tabpanel" data-bind="css: { active: $component.tabMode() == 'execution' }" class="tab-pane">
-				Execution reports here
+			<div role="tabpanel" data-bind="css: { active: $component.activeTab() == 'execution' }, 
+																			eventListener: [{ event: 'click', selector: 'button.removeResult', callback: removeResult}, {event: 'click', selector: 'button.execute', callback: onExecuteClick}]" class="tab-pane">
+				<ir-analysis-results params="sources: filteredSources, analysisCohorts: analysisCohorts"></ir-analysis-results>
 			</div>		
 		</div>	
 	</div>

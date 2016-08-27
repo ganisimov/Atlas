@@ -6,6 +6,7 @@ define([
 	'../InputTypes/ConceptSetItem',
 	'vocabularyprovider',
 	'databindings',
+	'circe',
 	'conceptpicker/ConceptPicker',
 	'faceted-datatable',
 	'knockout-jqueryui/tabs',
@@ -35,6 +36,7 @@ define([
 			self.nameHasFocus = ko.observable();
 			self.isImportEnabled = ko.observable(false);
 			self.isExportEnabled = ko.observable(false);
+			self.isLoadEnabled = ko.observable(false);
 			self.importValues = ko.observable();
 			self.dtApi = ko.observable(); // store reference to datatable
 			self.includedConceptsComponent = ko.observable();
@@ -116,6 +118,18 @@ define([
 					return ko.toJSON(self.selectedConceptSet().expression, null, 2);
 				else
 					return "";
+			}
+			
+			self.repositoryConceptsetSelected = function(conceptSet) {
+				console.log(conceptSet);
+				VocabularyAPI.getConceptSetExpression(conceptSet.id).then(function (expression) {
+					var newConceptSet = self.createConceptSet();
+					newConceptSet.name(conceptSet.name);
+					newConceptSet.expression.items(expression.items.map(function(conceptSetItem) {
+						return new ConceptSetItem(conceptSetItem);
+					}));
+					self.isLoadEnabled(false);
+				});
 			}
 			
 		}

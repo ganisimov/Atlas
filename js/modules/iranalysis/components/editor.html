@@ -11,27 +11,27 @@
 		</tr>
 		<tr>
 			<td valign="top">
-				<table style="width:100%" data-bind="foreach: analysis().targetIds">
+				<table style="width:100%" data-bind="foreach: analysisCohorts().targetCohorts">
 					<col style="width:20px">
 					<col style="width:20px">
 					<col style="width:auto">
 					<tr>
 						<td align="top"><i class="fa fa-times targetCohort"></i></td>
-						<td align="top">#<span data-bind="text: $data"/>: </td>
-						<td align="top"><span data-bind="text: ko.pureComputed(function() { return $component.resolveCohortId($data) })"/></td>
+						<td align="top">#<span data-bind="text: id"/>: </td>
+						<td align="top"><span data-bind="text: name"/></td>
 					</tr>					
 				</div>
 				</table>
 			</td>
 			<td valign="top">
-				<table style="width:100%" data-bind="foreach: analysis().outcomeIds">
+				<table style="width:100%" data-bind="foreach: analysisCohorts().outcomeCohorts">
 					<col style="width:20px">
 					<col style="width:20px">
 					<col style="width:auto">
 					<tr>
 						<td align="top"><i class="fa fa-times outcomeCohort"></i></td>
-						<td align="top">#<span data-bind="text: $data"/>: </td>
-						<td align="top"><span data-bind="text: ko.pureComputed(function() { return $component.resolveCohortId($data) })"/></td>
+						<td align="top">#<span data-bind="text: id"/>: </td>
+						<td align="top"><span data-bind="text: name"/></td>
 					</tr>					
 				</div>
 				</table>

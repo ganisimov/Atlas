@@ -1,22 +1,16 @@
-define(['knockout', 'text!./editor.html','../inputTypes/StudyWindow', '../StratifyRule','webapi/CohortDefinitionAPI', 
+define(['knockout', 'text!./editor.html','../inputTypes/StudyWindow', '../StratifyRule', 
 				'conceptsetbuilder/components','cohort-definition-browser', 
 				'databindings', 'cohortbuilder/components'
-], function (ko, template, StudyWindow, StratifyRule, cohortAPI) {
+], function (ko, template, StudyWindow, StratifyRule) {
 	function IRAnalysisEditorModel(params) {
 		var self = this;
 		self.analysis = params.analysis;
+		self.analysisCohorts = params.analysisCohorts;
 		self.loading = ko.observable(false);
-		self.cohortDefs = ko.observableArray();
 		self.showCohortDefinitionBrowser = ko.observable(false);
 		self.selectedCohortList = null;
 		self.selectedStrataRule = ko.observable();
-		
-		self.resolveCohortId = function(cohortId) {
-			var cohortDef = self.cohortDefs().filter(function(def) { 
-				return def.id == cohortId;
-			})[0];
-			return (cohortDef && cohortDef.name) || "Unknown Cohort";	
-		}
+		self.selectedStrataRuleIndex = null;
 		
 		self.addStudyWindow = function() {
 			self.analysis().studyWindow(new StudyWindow());
@@ -32,16 +26,19 @@ define(['knockout', 'text!./editor.html','../inputTypes/StudyWindow', '../Strati
 			self.showCohortDefinitionBrowser(true);
 		}
 		
-		self.deleteTargetCohort = function(cohortId) {
-			self.analysis().targetIds.remove(cohortId);	
+		self.deleteTargetCohort = function(cohortDef) {
+			self.analysis().targetIds.remove(cohortDef.id);	
 		}
 
-		self.deleteOutcomeCohort = function(cohortId) {
-			self.analysis().outcomeIds.remove(cohortId);	
+		self.deleteOutcomeCohort = function(cohortDef) {
+			self.analysis().outcomeIds.remove(cohortDef.id);	
 		}
 		
 		self.cohortSelected = function(cohortId) {
-			self.selectedCohortList.push(cohortId);
+			if (self.selectedCohortList().filter(function (item) {
+				return cohortId == item;
+			}).length == 0)
+				self.selectedCohortList.push(cohortId);
 		}
 
 		self.copyStrataRule = function(rule) {
@@ -55,8 +52,10 @@ define(['knockout', 'text!./editor.html','../inputTypes/StudyWindow', '../Strati
 	
 		self.selectStrataRule = function(rule) {
 			self.selectedStrataRule(rule);	
+			self.selectedStrataRuleIndex = params.analysis().strata().indexOf(rule);
+			console.log("Selected Index: " + self.selectedStrataRuleIndex);
 		}
-		
+				
 		self.addStrataRule = function() {
 			var newStratifyRule = new StratifyRule(null, self.analysis().ConceptSets);
 			self.analysis().strata.push(newStratifyRule);
@@ -65,9 +64,21 @@ define(['knockout', 'text!./editor.html','../inputTypes/StudyWindow', '../Strati
 		
 		
 		// Init actions
-		self.cohortDefinitions = cohortAPI.getCohortDefinitionList().then(function(list) {
-			self.cohortDefs(list);
-		})
+
+		
+		// Subscriptions
+		
+		self.analysisSubscription = self.analysis.subscribe(function (newVal) {
+			console.log("New analysis set.");
+			self.selectedStrataRule(params.analysis().strata()[self.selectedStrataRuleIndex]);
+		});
+		
+		// Cleanup
+		
+		self.dispose = function() {
+			console.log("Cohort Expression Editor Dispose.");
+			self.analysisSubscription.dispose();
+		};		
 	}
 
 	var component = {

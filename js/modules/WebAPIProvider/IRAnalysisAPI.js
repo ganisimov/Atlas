@@ -39,7 +39,8 @@ define(function (require, exports) {
 		if (typeof definitionCopy.expression != 'string')
 			definitionCopy.expression = JSON.stringify(definitionCopy.expression);
 		
-		var savePromise = $.ajax({
+		var savePromise = $.Deferred();
+		$.ajax({
 			url: config.webAPIRoot + 'ir/' + (definitionCopy.id || ""),
 			method: 'PUT',
 			contentType: 'application/json',
@@ -47,6 +48,9 @@ define(function (require, exports) {
 			error: function (error) {
 				console.log("Error: " + error);
 			}
+		}).then(function (result) {
+			result.expression = JSON.parse(result.expression);
+			savePromise.resolve(result);
 		});
 		return savePromise;
 	}
@@ -78,9 +82,9 @@ define(function (require, exports) {
 		return deletePromise;
 	}		
 	
-	function execute(analysisId, sourceKey) {
+	function execute(id, sourceKey) {
 		var executePromise = $.ajax({
-			url: config.webAPIRoot + 'cohortdefinition/' + (analysisId || '-1') + '/execute/' + sourceKey,
+			url: config.webAPIRoot + 'ir/' + (id || '-1') + '/execute/' + sourceKey,
 			error: function (error) {
 				console.log("Error: " + error);
 			}
@@ -88,9 +92,9 @@ define(function (require, exports) {
 		return executePromise;
 	}
 	
-	function getInfo(analysisId) {
+	function getInfo(id) {
 		var infoPromise = $.ajax({
-			url: config.webAPIRoot + 'ir/' + (AnalysisId || '-1') + '/info',
+			url: config.webAPIRoot + 'ir/' + (id || '-1') + '/info',
 			error: function (error) {
 				console.log("Error: " + error);
 			}
@@ -98,9 +102,21 @@ define(function (require, exports) {
 		return infoPromise;
 	}
 	
-	function getReport(analysisId, sourceKey) {
+	
+	function deleteInfo(id, sourceKey) {
+		var deletePromise = $.ajax({
+			url: config.webAPIRoot + 'ir/' + (id || "") + "/info/" + sourceKey,
+			method: 'DELETE',
+			error: function (error) {
+				console.log("Error: " + error);
+			}
+		});
+		return deletePromise;
+	}		
+	
+	function getReport(id, sourceKey, targetId, outcomeId) {
 		var reportPromise = $.ajax({
-			url: config.webAPIRoot + 'ir/' + (analysisId || '-1') + '/report/' + sourceKey,
+			url: config.webAPIRoot + 'ir/' + (id || '-1') + '/report/' + sourceKey + "?targetId=" + targetId + "&outcomeId=" + outcomeId,
 			error: function (error) {
 				console.log("Error: " + error);
 			}
@@ -116,6 +132,7 @@ define(function (require, exports) {
 		deleteAnalysis: deleteAnalysis,
 		execute: execute,
 		getInfo: getInfo,
+		deleteInfo: deleteInfo,
 		getReport: getReport
 	}
 
