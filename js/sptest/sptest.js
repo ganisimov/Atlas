@@ -2,28 +2,49 @@ define(['knockout', 'text!./sptest.html','lodash','d3ChartBinding','components/s
 	function sptest(params) {
 		var self = this;
 		self.model = params.model;
+		self.chartObj = ko.observable();
+		self.domElement = ko.observable();
+		self.processedData = ko.observable(); // junk
+		self.chartResolution = ko.observable(); // junk
 		self.jsonFile = 'js/sptest/sample.json';
-		self.chartOptions = chartOptions();
+		self.chartOptions = chartOptions(chartOptions());
 		self.dataSetup = function(vectors) {
-					/* sample:
-						{                               
-							"covariateId": [     13,     14...
-							"covariateName": [ "Age group: 1...
-							"beforeMatchingMeanTreated": [ 0...
-							"beforeMatchingMeanComparator": ...
-							"beforeMatchingSumTreated": [ 10...
-							...
-							}
-						*/
-					var arr = [];
-					var names = _.keys(vectors);
-					for (var i=0; i<vectors[names[0]].length; i++) {
-						var obj = {};
-						names.forEach(name => obj[name] = vectors[name][i]);
-						arr.push(obj);
+			/* sample:
+				{                               
+					"covariateId": [     13,     14...
+					"covariateName": [ "Age group: 1...
+					"beforeMatchingMeanTreated": [ 0...
+					"beforeMatchingMeanComparator": ...
+					"beforeMatchingSumTreated": [ 10...
+					...
 					}
-					return arr;
-				};
+				*/
+			var arr = [];
+			var names = _.keys(vectors);
+			for (var i=0; i<vectors[names[0]].length; i++) {
+				var obj = {};
+				names.forEach(name => obj[name] = vectors[name][i]);
+				arr.push(obj);
+			}
+			return arr;
+		};
+		var request = $.ajax({
+			url: self.jsonFile,
+			method: 'GET',
+			contentType: 'application/json',
+			error: function (err) {
+				console.log(err);
+			},
+			success: function (data) {
+				var pdata = self.dataSetup(data);
+				//self.processedData(pdata);
+				//self.chartOptions(options);
+				//self.chartResolution({width:460, height:150});
+				var chart = self.chartObj();
+				chart.render(pdata, self.domElement(), 460, 150, self.chartOptions);
+			}
+		});
+
 	}
 
 	var component = {

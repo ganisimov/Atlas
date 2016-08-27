@@ -2357,6 +2357,7 @@
 
 	module.zoomScatter = function () {
 		this.render = function (data, target, w, h, opts) {
+			if (!data.length) return;
 			var cp = new ChartProps(this.defaultOptions, opts);
 			DEBUG && (window.cp = cp);
 			if (!cp.data.alreadyInSeries) {
@@ -2672,6 +2673,7 @@
 			},
 			series: {
 						value: function(d) { return this.parentNode.__data__.name; },
+						//value: d=>1,
 						showLabel: false,
 						//showSeriesLabel: false,
 						needsLabel: true,
