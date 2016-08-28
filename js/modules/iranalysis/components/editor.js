@@ -42,7 +42,10 @@ define(['knockout', 'text!./editor.html','../inputTypes/StudyWindow', '../Strati
 		}
 
 		self.copyStrataRule = function(rule) {
-			console.log(rule);
+				var copiedRule = new StratifyRule(ko.toJS(rule), self.analysis().ConceptSets);
+				copiedRule.name("Copy of: " + copiedRule.name());
+				self.analysis().strata.push(copiedRule);
+				self.selectedStrataRule(copiedRule);
 		}
 		
 		self.deleteStrataRule = function(rule) {
