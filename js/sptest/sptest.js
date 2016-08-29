@@ -1,10 +1,29 @@
-define(['knockout', 'text!./sptest.html','lodash','d3ChartBinding','components/scatterplot'], function (ko, view, _) {
+define(['knockout', 'text!./sptest.html','lodash','d3ChartBinding','components/faceted-datatable-cf',], 
+			 function (ko, view, _) {
+	var getData = _.once(function(self) {
+		var request = $.ajax({
+			url: self.jsonFile,
+			method: 'GET',
+			contentType: 'application/json',
+			error: function (err) {
+				console.log(err);
+			},
+			success: function (data) {
+				var pdata = self.dataSetup(data);
+				var chart = self.chartObj();
+				chart.render(pdata, self.domElement(), 460, 150, self.chartOptions);
+				self.chartData(pdata);
+			}
+		});
+	});
 	function sptest(params) {
 		var self = this;
 		self.model = params.model;
+		var filters = {};
 		self.chartObj = ko.observable();
 		self.domElement = ko.observable();
-		self.processedData = ko.observable(); // junk
+		self.chartData = ko.observableArray(self.chartData && self.chartData() || []);
+		console.log(self.chartData().length);
 		self.chartResolution = ko.observable(); // junk
 		self.jsonFile = 'js/sptest/sample.json';
 		self.chartOptions = chartOptions(chartOptions());
@@ -28,23 +47,18 @@ define(['knockout', 'text!./sptest.html','lodash','d3ChartBinding','components/s
 			}
 			return arr;
 		};
-		var request = $.ajax({
-			url: self.jsonFile,
-			method: 'GET',
-			contentType: 'application/json',
-			error: function (err) {
-				console.log(err);
-			},
-			success: function (data) {
-				var pdata = self.dataSetup(data);
-				//self.processedData(pdata);
-				//self.chartOptions(options);
-				//self.chartResolution({width:460, height:150});
-				var chart = self.chartObj();
-				chart.render(pdata, self.domElement(), 460, 150, self.chartOptions);
-			}
-		});
-
+		self.columns = [
+			{ title: 'Covariate', data: 'covariateName', },
+			{ title: 'Analysis ID', data: 'analysisId', },
+			{ title: 'Concept ID', data: 'conceptId', },
+			{ title: 'Before Match Mean Treated', data: 'beforeMatchingMeanTreated', },
+			{ title: 'Before Match Mean Comparator', data: 'beforeMatchingMeanComparator', },
+		];
+		self.facets = ko.observableArray([
+			{ caption: 'Analysis ID', func: d=>d.analysisId, filter:ko.observable(null), Members:[] },
+			{ caption: 'Concept ID', data: d=>d.conceptId, filter:ko.observable(null), Members:[] },
+		]);
+		getData(self);
 	}
 
 	var component = {
