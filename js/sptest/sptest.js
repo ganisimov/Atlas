@@ -27,6 +27,10 @@ define(['knockout', 'text!./sptest.html','lodash','d3ChartBinding','components/f
 		self.chartResolution = ko.observable(); // junk
 		self.jsonFile = 'js/sptest/sample.json';
 		self.chartOptions = chartOptions(chartOptions());
+		var dispatch = self.chartOptions.dispatch;
+		dispatch.on("brush", function() {
+			console.log(arguments);
+		});
 		self.dataSetup = function(vectors) {
 			/* sample:
 				{                               
@@ -88,6 +92,7 @@ define(['knockout', 'text!./sptest.html','lodash','d3ChartBinding','components/f
 			data: {
 				alreadyInSeries: false,
 			},
+			dispatch: d3.dispatch("brush"),
 			x: {
 						value: d=>d.beforeMatchingStdDiff,
 						label: "Before matching StdDiff",
@@ -122,6 +127,11 @@ define(['knockout', 'text!./sptest.html','lodash','d3ChartBinding','components/f
 								value: round(props.size.value(d), 4),
 							};
 						},
+			},
+			series: {
+						value: d => ['A','B','C','D'][Math.floor(Math.random() * 4)],
+						sortBy:  d => d.afterMatchingStdDiff,
+						tooltipOrder: 5,
 			},
 			color: {
 						value: function(d, i, j, props, data, series) {
@@ -172,11 +182,6 @@ define(['knockout', 'text!./sptest.html','lodash','d3ChartBinding','components/f
 						value: () => junk++ % 3,
 						label: "Random",
 						tooltipOrder: 4,
-			},
-			series: {
-						value: d => ['A','B','C','D'][Math.floor(Math.random() * 4)],
-						sortBy:  d => d.afterMatchingStdDiff,
-						tooltipOrder: 5,
 			},
 			CIup: { // support CI in both directions
 						value: d => d.upperBound,
